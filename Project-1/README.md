@@ -52,7 +52,7 @@ It becomes more clear that alloca doesnt use the stack to allocate memory, since
 
 
 ## show the size (in bytes) and structure of a Node that allocated six bytes of data include the bytes pointer, and indicate using an arrow which byte in the allocated memory it points to.
-![malloc.cpp node of 6 bytes](https://raw.githubusercontent.com/KyleRockwell/SSU-CS-351/refs/heads/main/Project-1/2%20nodes.png)
+![malloc.cpp node of 6 bytes](https://raw.githubusercontent.com/KyleRockwell/SSU-CS-351/refs/heads/main/Project-1/1%20node.png)
 
 
 ## There's an overhead to allocating memory, initializing it, and eventually processing (in our case, hashing it). For each program, were any of these tasks the same? Which one(s) were different?
