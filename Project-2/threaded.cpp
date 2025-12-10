@@ -92,10 +92,20 @@ int main(int argc, char* argv[]) {
     //   the threads, the computational loop (see mean.cpp), and lambda's
     //   closure configuration.
     //
+
     for (size_t id = 0; id < threads.size(); ++id) {
         threads[id] = std::jthread(
-            []() {
-                // Add your implementation here
+            [=, &sums, &barrier, &data]() {
+			const size_t begin = id*chunkSize;
+			const size_t end = std::min(data.size(), begin + chunkSize);
+			//std::cout<<"begin: " << begin << " end: " << end <<" id: " << id <<std::endl;	
+			sums[id] = 0;
+			for (auto i =  begin; i < end; ++i){
+				//std::cout<<"i: " << i << std::endl;
+				sums[id] += data[i];
+			}
+
+				
 
                 barrier.arrive_and_wait();
             }
