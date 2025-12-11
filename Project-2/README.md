@@ -47,3 +47,19 @@ with multithreading that becomes
 
 The value makes sense given there is a roughtly 20x speedup, so the bandwidth would be roughly 20x faster.
 
+
+
+
+---
+---
+## Computing a Volume Questions:
+
+![graph of volume speedup vs # of threads](VolumeSpeedup.png)
+
+
+**Do you get a similar performance curve to `threaded.out`?**
+---
+
+As you can see by looking at the graph, the graph of the speedup does not scale in the same way that 
+the threaded.cpp graph does. Curiously the speedup still increases when the number of threads are greater than the 
+number of threads available on the system
