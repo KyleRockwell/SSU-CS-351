@@ -110,6 +110,7 @@ int main(int argc, char* argv[]) {
     std::vector<size_t>        insidePoints(numThreads);
     std::barrier               barrier(numThreads);
 
+
     // Computation of how much work a thread should do. (yes, this doesn't
     //   divide evenly in most cases, but we'll lose at most numThreads
     //   samples, which isn't a big deal if the numSamples is sufficiently
@@ -135,9 +136,10 @@ int main(int argc, char* argv[]) {
     //   (really, you'll need to add four lines to this, one of which is a
     //      closing brace :-)   
     //
+    std::vector<int> tally(numThreads);
     for (size_t id = 0; id < threads.size(); ++id) {
-        threads[id] = std::jthread{ []() {
-
+        threads[id] = std::jthread{ [=,&barrier, &tally ]() {
+		tally[id] = 0;
             // C++ 11's random number generation system.  These functions
             //   will generate uniformly distributed unsigned integers in
             //   the range [0, partitions].  The functions are used in the
@@ -153,12 +155,21 @@ int main(int argc, char* argv[]) {
                     return static_cast<double>(uniform(generator)) / partitions;
                 };
             
+		const size_t begin = id*chunkSize;
+		const size_t end = std::min(numSamples, begin + chunkSize);
+
+		for(auto i = begin; i< end; ++i){
+
+                	vec3 p(rand(), rand(), rand());
+			tally[id] += sdf(p);
+		}
                 // Generate points inside the volume cube.  First, create uniformly
                 //   distributed points in the range [0.0, 1.0] for each dimension.
-                vec3 p(rand(), rand(), rand());
 
 
-            barrier.arrive_and_wait();
+			
+            	barrier.arrive_and_wait();
+
         }};
     }
 
@@ -168,6 +179,10 @@ int main(int argc, char* argv[]) {
     //
     // (Look in threaded.cpp for hints)
 
-    std::cout << static_cast<double>(volumePoints) / numSamples << "\n";
+	threads.back().join();
+		
+
+	auto  pointsInside = std::accumulate(std::begin(tally), std::end(tally), 0.0);
+    std::cout<< "volume : " << static_cast<double>(pointsInside) / numSamples << "\n";
 }
 
