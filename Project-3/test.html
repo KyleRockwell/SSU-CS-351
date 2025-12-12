@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="initShaders.js"></script>
+
+        <script id="vertex-shader" type="x-shader/x-vertex">
+		
+            void main() {
+
+		if (gl_VertexID == 0){
+			gl_Position = vec4(-1.0, -1.0, 0.0, 1.0);
+
+		}
+		if (gl_VertexID == 1){
+			gl_Position = vec4(-1.0, 1.0, 0.0, 1.0);
+                       
+		}                      		
+		if (gl_VertexID == 2){
+			gl_Position = vec4(1.0, -1.0, 0.0, 1.0);
+                       
+		}                      		
+		if (gl_VertexID == 3){
+			gl_Position = vec4(1.0, 1.0, 0.0, 1.0);
+                       
+		}                      		
+
+            }
+        </script>
+        
+        <script id="fragment-shader" type="x-shader/x-fragment">
+	   out vec4 fColor;
+	   uniform vec2 u_resolution;
+	   uniform  float t;
+	   float myfloor(){
+	  	float mask; 
+		if(gl_FragCoord.y > u_resolution.y*0.4){
+			mask =  0.0;
+		}
+		else{
+		//from y is zero to -y, x should grow from +- 0.5 to +-1
+
+		//	if(abs(gl_FragCoord.x) > (u_resolution.x*0.5*sign(-gl_FragCoord.y / u_resolution.y) )){
+			//if((gl_FragCoord.y/normalize(u_resolution.y))*(abs(u_resolution.x*0.5-gl_FragCoord.x )) < (u_resolution.x *0.33)){
+			if(((gl_FragCoord.y)/normalize(u_resolution.y)   )/(1.0 + abs(u_resolution.x*0.5 )) > (u_resolution.x *0.33)){
+			//if y = 0, and -0.5 < x < 0.5
+			
+	 			mask = 1.0;
+			}
+
+		}
+		return mask;
+
+	   }
+	   float perspective(){
+	 	return 1.0;
+	   }
+           void main() {
+	   	
+		vec4	floorColor = vec4(1.0, 1.0, 1.0, 1.0);	
+		//float floor = 1.0*(gl_FragCoord.y > 0.0);
+		
+		fColor = vec4(0.03, 0.3, 0.9, 1.0);
+		fColor = vec4(fract(gl_FragCoord.xy/u_resolution), 0.0, myfloor());
+		fColor = vec4(1.0, 0.2, 1.0, myfloor());
+                // Your fragment shader code will go here
+		
+            }
+        </script>
+
+        <script>
+            window.onload = () => {
+                var canvas = document.getElementById("webgl");
+                var gl = canvas.getContext("webgl2");
+
+                gl.clearColor(0.1, 0.1, 0.1, 1.0);
+
+                var program = initShaders(gl, "vertex-shader", "fragment-shader");
+                
+                // These are lines that we'll need a bit later.
+                 var uTime = gl.getUniformLocation(program, "t");
+		 const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+
+                var t = 0.0;
+
+                var render = () => {
+                    t += 0.01;  // Tick time
+
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+                    gl.useProgram(program);
+
+
+                    // Other code we'll need later, in combination with the
+                    //   code above marked for later use.
+                     gl.uniform1f(uTime, t);
+		    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+                    gl.drawArrays(gl.TRIANGLE_STRIP, 0,4);//(1.0, 1.0, 0.0, 1.0);
+
+                    requestAnimationFrame(render);
+                };
+
+                render();
+            };
+        </script>
+    </head>
+
+    <body>
+        <canvas id="webgl" width="512" height="512"></canvas>
+    </body>
+</html>
