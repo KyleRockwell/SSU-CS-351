@@ -4,15 +4,26 @@
         <script src="initShaders.js"></script>
 
         <script id="vertex-shader" type="x-shader/x-vertex">
+		uniform float N;
             void main() {
                 // Your vertex shader code will go here
+		float vid = float(gl_VertexID);
+		const float Pi = 3.14159265358979;
+	//	const float Pi = 4;
+
+		float  angle = vid* 2.0 * Pi /(N - 2.0);
+		vec2 v = vec2(cos(angle), sin(angle));
+		gl_Position = vec4(v, 0.0, 1.0);
+
             }
         </script>
         
         <script id="fragment-shader" type="x-shader/x-fragment">
+	   out vec4 fColor;
             void main() {
+	    	fColor = vec4(1.0, 1.0, 0.0, 1.0);
                 // Your fragment shader code will go here
-
+		
             }
         </script>
 
@@ -26,7 +37,7 @@
                 var program = initShaders(gl, "vertex-shader", "fragment-shader");
                 
                 // These are lines that we'll need a bit later.
-                // var uN = gl.getUniformLocation(program, "N");
+                 var uN = gl.getUniformLocation(program, "N");
                 // var uTime = gl.getUniformLocation(program, "t");
 
                 var t = 0.0;
@@ -41,10 +52,11 @@
 
                     // Other code we'll need later, in combination with the
                     //   code above marked for later use.
-                    // gl.uniform1f(uN, N);
+                     gl.uniform1f(uN, N);
                     // gl.uniform1f(uTime, t);
 
-                    gl.drawArrays(gl.LINE_LOOP, 0, 3);
+                    //gl.drawArrays(gl.TRIANGLES, 0, 3);
+                    gl.drawArrays(gl.TRIANGLE_FAN, 0, N);(1.0, 1.0, 0.0, 1.0);
 
                     requestAnimationFrame(render);
                 };
